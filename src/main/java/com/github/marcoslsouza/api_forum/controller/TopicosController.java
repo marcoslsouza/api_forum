@@ -17,8 +17,18 @@ public class TopicosController {
 	private TopicoRepository topicoRepository;
 	
 	@RequestMapping("/topicos")
-	public List<TopicoDto> lista() {
-		List<Topico> topicos = this.topicoRepository.findAll();
-		return TopicoDto.converter(topicos);
+	public List<TopicoDto> lista(String nomeCurso) {
+		if(nomeCurso == null) {
+			List<Topico> topicos = this.topicoRepository.findAll();
+			return TopicoDto.converter(topicos);
+		} else {
+			// Monta a querie para pesquisar por titulo automaticamente
+			// List<Topico> topicos = this.topicoRepository.findByTitulo();
+			
+			// Monta a querie para pesquisar por nome do curso automaticamente.
+			// Dentro de Topico temos Curso e dentro de curso temos nome. Poderia ser: findByCurso_Nome
+			List<Topico> topicos = this.topicoRepository.findByCursoNome(nomeCurso);
+			return TopicoDto.converter(topicos);
+		}
 	}
 }
