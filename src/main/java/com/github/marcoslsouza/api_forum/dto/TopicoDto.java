@@ -2,7 +2,6 @@ package com.github.marcoslsouza.api_forum.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.github.marcoslsouza.api_forum.modelo.Topico;
