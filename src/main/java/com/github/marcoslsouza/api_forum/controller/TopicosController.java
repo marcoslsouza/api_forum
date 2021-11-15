@@ -1,6 +1,7 @@
 package com.github.marcoslsouza.api_forum.controller;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,7 +53,7 @@ public class TopicosController {
 	
 	@PostMapping
 	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm topicoForm, UriComponentsBuilder uriBuilder) {
-		Topico topico = topicoForm.converter(cursoRepository);
+		Topico topico = topicoForm.converter(this.cursoRepository);
 		this.topicoRepository.save(topico);
 		
 		// Retorna o endereço do recurso e um json de topico e status 201 (created)
@@ -66,6 +68,24 @@ public class TopicosController {
 		
 		return topico.map(linha -> 
 					ResponseEntity.ok().body(new DetalhesTopicoDto(linha))
-				).orElse(ResponseEntity.notFound().build());
+				).orElse(ResponseEntity.notFound().build()); 
 	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
+		
+		return topicoRepository.findById(id)
+				.map(linha -> {
+					
+					Topico topico = new Topico();
+					topico.setId(id);
+					topico.setTitulo(form.getTitulo());
+					topico.setMensagem(form.getMensagem());
+					topico.setDataCriacao(LocalDateTime.now());
+					topico.setStatus(linha.getStatus());
+					
+					Topico topicoAtualizado = topicoRepository.save(topico);
+					return ResponseEntity.ok().body(new TopicoDto(topicoAtualizado));
+				}).orElse(ResponseEntity.notFound().build());
+	} 
 }
