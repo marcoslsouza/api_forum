@@ -4,11 +4,13 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,18 +39,17 @@ public class TopicosController {
 	
 	@GetMapping
 	public List<TopicoDto> lista(String nomeCurso) {
+		
+		List<Topico> topicos;
+		
 		if(nomeCurso == null) {
-			List<Topico> topicos = this.topicoRepository.findAll();
-			return TopicoDto.converter(topicos);
+			topicos = this.topicoRepository.findAll();
 		} else {
-			// Monta a querie para pesquisar por titulo automaticamente
-			// List<Topico> topicos = this.topicoRepository.findByTitulo();
 			
-			// Monta a querie para pesquisar por nome do curso automaticamente.
-			// Dentro de Topico temos Curso e dentro de curso temos nome. Poderia ser: findByCurso_Nome
-			List<Topico> topicos = this.topicoRepository.findByCursoNome(nomeCurso);
-			return TopicoDto.converter(topicos);
+			topicos = this.topicoRepository.findByCursoNome(nomeCurso);
 		}
+		
+		return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
 	}
 	
 	@PostMapping
@@ -87,5 +88,14 @@ public class TopicosController {
 					Topico topicoAtualizado = topicoRepository.save(topico);
 					return ResponseEntity.ok().body(new TopicoDto(topicoAtualizado));
 				}).orElse(ResponseEntity.notFound().build());
-	} 
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> remover(@PathVariable Long id) {
+		return this.topicoRepository.findById(id)
+				.map(linha -> {
+					this.topicoRepository.deleteById(id);
+					return ResponseEntity.ok().build();
+				}).orElse(ResponseEntity.notFound().build());
+	}
 }
