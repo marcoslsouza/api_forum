@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,8 +44,9 @@ public class TopicosController {
 	
 	// @RequestParam parametros de url
 	@GetMapping
+	@Cacheable(value = "listaDeTopicos") // Guardar o retorno em cache
 	public Page<TopicoDto> lista(@RequestParam(required = false) String nomeCurso, 
-			@PageableDefault(sort = "id", direction = Direction.DESC) Pageable paginacao) {
+			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 5) Pageable paginacao) {
 		
 		Page<Topico> topicos;
 		

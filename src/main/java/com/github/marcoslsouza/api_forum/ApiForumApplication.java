@@ -2,10 +2,12 @@ package com.github.marcoslsouza.api_forum;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @SpringBootApplication
 @EnableSpringDataWebSupport // Habilitar a paginacao
+@EnableCaching // Habilitar o recurso de cache na aplicacao
 public class ApiForumApplication {
 
 	public static void main(String[] args) {
