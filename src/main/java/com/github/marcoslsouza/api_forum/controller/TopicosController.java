@@ -4,12 +4,11 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -44,7 +43,7 @@ public class TopicosController {
 	
 	// @RequestParam parametros de url
 	@GetMapping
-	@Cacheable(value = "listaDeTopicos") // Guardar o retorno em cache
+	//@Cacheable(value = "listaDeTopicos") // Guardar o retorno em cache
 	public Page<TopicoDto> lista(@RequestParam(required = false) String nomeCurso, 
 			@PageableDefault(sort = "id", direction = Direction.DESC, page = 0, size = 5) Pageable paginacao) {
 		
@@ -61,6 +60,8 @@ public class TopicosController {
 	}
 	
 	@PostMapping
+	@Transactional
+	//@CacheEvict(value = "listaDeTopicos", allEntries = true) // Ao cadastrar um novo topico, limpa o cache "listaDeTopicos"
 	public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm topicoForm, UriComponentsBuilder uriBuilder) {
 		Topico topico = topicoForm.converter(this.cursoRepository);
 		this.topicoRepository.save(topico);
@@ -81,6 +82,7 @@ public class TopicosController {
 	}
 	
 	@PutMapping("/{id}")
+	@Transactional
 	public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
 		
 		return topicoRepository.findById(id)
@@ -99,6 +101,8 @@ public class TopicosController {
 	}
 	
 	@DeleteMapping("/{id}")
+	@Transactional
+	//@CacheEvict(value = "listaDeTopicos", allEntries = true)
 	public ResponseEntity<?> remover(@PathVariable Long id) {
 		return this.topicoRepository.findById(id)
 				.map(linha -> {
