@@ -27,7 +27,9 @@ public class SecurityCondiguration extends WebSecurityConfigurerAdapter {
 		
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.GET, "/topicos").permitAll()
-			.antMatchers(HttpMethod.GET, "/topicos/*").permitAll();
+			.antMatchers(HttpMethod.GET, "/topicos/*").permitAll()
+			.anyRequest().authenticated() // Qualquer outra requisicao devera autenticar
+			.and().formLogin(); // Gerar um formulario de autenticacao
 	}
 	
 	// Confikguracoes de recursos estaticos(js, css, imagens e etc.)
