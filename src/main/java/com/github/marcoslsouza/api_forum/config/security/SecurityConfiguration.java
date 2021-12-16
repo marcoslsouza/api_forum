@@ -1,13 +1,16 @@
 package com.github.marcoslsouza.api_forum.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 // Ativa o Spring Security
@@ -15,10 +18,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 // E uma classe de configuracao e com beans e etc.
 @Configuration
-public class SecurityCondiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private AutenticacaoService autenticacaoService;
+	
+	@Override
+	@Bean
+	protected AuthenticationManager authenticationManager() throws Exception {
+		return super.authenticationManager();
+	}
 	
 	// Configuracoes de autenticacao
 	@Override
@@ -35,8 +44,17 @@ public class SecurityCondiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.GET, "/topicos").permitAll()
 			.antMatchers(HttpMethod.GET, "/topicos/*").permitAll()
+			.antMatchers(HttpMethod.POST, "/auth").permitAll()
 			.anyRequest().authenticated() // Qualquer outra requisicao devera autenticar
-			.and().formLogin(); // Gerar um formulario de autenticacao
+			.and().csrf().disable()
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+			//.and().formLogin(); // Gerar um formulario de autenticacao
+		
+		// Comentando: .and().formLogin();
+		// E adicionando:
+		// .and().csrf().disable()
+		// .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		// Indica que nao e para criar sessao
 	}
 	
 	// Confikguracoes de recursos estaticos(js, css, imagens e etc.)
