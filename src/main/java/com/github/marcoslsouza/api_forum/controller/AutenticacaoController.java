@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 
 import com.github.marcoslsouza.api_forum.config.security.TokenService;
 import com.github.marcoslsouza.api_forum.controller.form.LoginForm;
+import com.github.marcoslsouza.api_forum.dto.TokenDto;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,7 +31,7 @@ public class AutenticacaoController {
 	private TokenService tokenService;
 
 	@PostMapping
-	public ResponseEntity<?> autenticar(@RequestBody @Valid LoginForm form) {
+	public ResponseEntity<TokenDto> autenticar(@RequestBody @Valid LoginForm form) {
 		
 		// Criando um objeto UsernamePasswordAuthenticationToken para receber os dados do form
 		UsernamePasswordAuthenticationToken dadosLogin = form.converter();
@@ -47,7 +48,9 @@ public class AutenticacaoController {
 			// Teste para ver se está gerando o token
 			System.out.println(token);
 			
-			return ResponseEntity.ok().build();
+			// Enviar o token para o cliente
+			// Nao a necessidade de .build() pois java estamos construindo o objeto no ok no corpo da requisicao
+			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
 		} catch(AuthenticationException e) {
 			return ResponseEntity.badRequest().build();
 		}

@@ -76,6 +76,7 @@ public class TopicosController {
 		
 		Optional<Topico> topico = topicoRepository.findById(id);
 		
+		// .build() para construcao do objeto
 		return topico.map(linha -> 
 					ResponseEntity.ok().body(new DetalhesTopicoDto(linha))
 				).orElse(ResponseEntity.notFound().build()); 
