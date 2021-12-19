@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // Ativa o Spring Security
 @EnableWebSecurity
@@ -47,8 +48,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.POST, "/auth").permitAll()
 			.anyRequest().authenticated() // Qualquer outra requisicao devera autenticar
 			.and().csrf().disable()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-			//.and().formLogin(); // Gerar um formulario de autenticacao
+			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			//.and().formLogin(); // Gerar um formulario de autenticacao.
+			// addFilterBefore indica que AutenticacaoViaTokenFilter() vai ser executado antes de UsernamePasswordAuthenticationFilter
+			.and().addFilterBefore(new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 		
 		// Comentando: .and().formLogin();
 		// E adicionando:

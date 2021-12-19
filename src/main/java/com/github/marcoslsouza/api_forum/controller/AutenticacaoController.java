@@ -49,7 +49,8 @@ public class AutenticacaoController {
 			System.out.println(token);
 			
 			// Enviar o token para o cliente
-			// Nao a necessidade de .build() pois java estamos construindo o objeto no ok no corpo da requisicao
+			// Nao a necessidade de .build() pois java estamos construindo o objeto no ok no corpo da requisicao.
+			// Tipo Bearer quando se utiliza tokens
 			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
 		} catch(AuthenticationException e) {
 			return ResponseEntity.badRequest().build();
