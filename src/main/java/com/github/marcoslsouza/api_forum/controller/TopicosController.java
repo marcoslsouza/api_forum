@@ -2,13 +2,16 @@ package com.github.marcoslsouza.api_forum.controller;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -38,18 +42,23 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 	
 	@GetMapping
-	public List<TopicoDto> lista(String nomeCurso) {
+	@Cacheable(value = "listaDeTopicos")
+	// @RequestParam int pagina, @RequestParam int qtd, @RequestParam String ordenacao
+	public Page<TopicoDto> lista(@RequestParam(required = false) String nomeCurso, 
+			@PageableDefault(sort = "id", direction = Direction.DESC, page = 1, size = 5) Pageable paginacao) {
 		
-		List<Topico> topicos;
+		// Pageable paginacao = PageRequest.of(pagina, qtd, Direction.DESC, ordenacao);
+		
+		Page<Topico> topicos;
 		
 		if(nomeCurso == null) {
-			topicos = this.topicoRepository.findAll();
+			topicos = this.topicoRepository.findAll(paginacao);
 		} else {
 			
-			topicos = this.topicoRepository.findByCursoNome(nomeCurso);
+			topicos = this.topicoRepository.findByCursoNome(nomeCurso, paginacao);
 		}
 		
-		return topicos.stream().map(TopicoDto::new).collect(Collectors.toList());
+		return topicos.map(TopicoDto::new);
 	}
 	
 	@PostMapping
