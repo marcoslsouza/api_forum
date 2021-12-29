@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.AuthenticationException;
 
 import com.github.marcoslsouza.api_forum.config.security.TokenService;
+import com.github.marcoslsouza.api_forum.dto.TokenDto;
 import com.github.marcoslsouza.api_forum.form.LoginForm;
 
 @RestController
@@ -39,9 +40,9 @@ public class AutenticacaoController {
 		
 			String token = tokenService.gerarToken(authentication);
 			
-			System.out.println("Token: " + token);
+			//System.out.println("Token: " + token);
 			
-			return ResponseEntity.ok().build();
+			return ResponseEntity.ok(new TokenDto(token, "Bearer"));
 		} catch(AuthenticationException e) {
 			return ResponseEntity.badRequest().build();
 		}
