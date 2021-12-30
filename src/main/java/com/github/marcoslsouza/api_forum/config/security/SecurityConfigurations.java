@@ -23,6 +23,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AutenticacaoService autenticacaoService;
 	
+	@Autowired
+	private TokenService tokenService;
+	
 	// Retorna um authenticationManager para ser injetado no controller
 	@Override
 	@Bean
@@ -49,7 +52,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		.and().csrf().disable()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		// Chamar a AutenticacaoViaTokenFilter antes de UsernamePasswordAuthenticationFilter 
-		.and().addFilterBefore(new AutenticacaoViaTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+		.and().addFilterBefore(new AutenticacaoViaTokenFilter(this.tokenService), UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	// Configuracoes de recursos estaticos (js, css, imagens e etc)
