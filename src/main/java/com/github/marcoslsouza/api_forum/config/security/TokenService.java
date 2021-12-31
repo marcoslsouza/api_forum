@@ -39,6 +39,7 @@ public class TokenService {
 		
 		try {
 			
+			// Devolve um objeto com os dados do token. Se retornar algo esta valido.
 			Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token);
 			return true;
 		} catch(Exception e) {
