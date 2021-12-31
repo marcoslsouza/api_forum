@@ -14,6 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.github.marcoslsouza.api_forum.repository.UsuarioRepository;
+
 // Habilita o modulo de segurança da aplicação
 @EnableWebSecurity
 // Classe de configuracao (tera alguns beans)
@@ -25,6 +27,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private TokenService tokenService;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 	
 	// Retorna um authenticationManager para ser injetado no controller
 	@Override
@@ -52,7 +57,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
 		.and().csrf().disable()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		// Chamar a AutenticacaoViaTokenFilter antes de UsernamePasswordAuthenticationFilter 
-		.and().addFilterBefore(new AutenticacaoViaTokenFilter(this.tokenService), UsernamePasswordAuthenticationFilter.class);
+		.and().addFilterBefore(new AutenticacaoViaTokenFilter(this.tokenService, this.usuarioRepository), UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	// Configuracoes de recursos estaticos (js, css, imagens e etc)
